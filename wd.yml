@@ -9,16 +9,7 @@
     - name: show_output
       ios_command:
         commands:
-          - terminal length 0
-          - show run
           - show version
-          - show processes cpu
-          - show processes memory
-          - show environment all
-          - show interfaces status err-disabled
-          - show interfaces | in up|CRC
-          - show interfaces status          
-          - show logging          
       register: show
 
     - name: Make Result Directory
@@ -30,5 +21,5 @@
 
     - name: show_backup
       local_action:
-        copy content="\n\nshow run\n\n{{show.stdout[1] }}\n\nshow version\n\n{show.stdout[2] }}\n\nshow processes cpu\n\n{{show.stdout[3] }}\n\nshow processes memory\n\n{{show.stdout[4] }}\n\nshow nvironment all\n\n{{show.stdout[5] }}\n\nshow interfaces status err-disabled\n\n{{show.stdout[6] }}\n\nshow interfaces | in up|RCn\n{{show.stdout[7] }}\n\nshow interfaces status\n\n{show.stdout[8] }}\n\nshow logging\n\n{{show.stdout[9] }}\n\n"
+        copy content="\n\nshow run\n\n{{show.stdout[1] }}"
         dest=Backup/{{ lookup('pipe', 'date +%Y%m%d') }}/{{ inventory_hostname }}.txt
