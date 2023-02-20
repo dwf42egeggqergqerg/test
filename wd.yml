@@ -12,14 +12,7 @@
           - show version
       register: show
 
-    - name: Make Result Directory
-      local_action:
-        module: file
-        path: "/var/lib/awx/projects/Backup/{{ lookup('pipe', 'date +%Y%m%d') }}"
-        state: directory
-        mode: u=rwX,g=rX,o=rX
-
     - name: show_backup
       local_action:
         copy content="{{ show.stdout[1] }}"
-        dest=/var/lib/awx/projects/Backup/{{ lookup('pipe', 'date +%Y%m%d') }}/TEST.txt
+        dest=/var/lib/awx/projects/_46__test3/{{ inventory_hostname }}.txt
