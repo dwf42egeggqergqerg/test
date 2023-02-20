@@ -1,5 +1,5 @@
 [ios]
-192.168.0.18
+ansible_host=192.168.0.18
 
 [ios:vars]
 ansible_network_os=ios
@@ -19,6 +19,6 @@ ansible_become_password=test1234
 ansible_python_interpreter=/usr/bin/python3
 
 [log]
-192.168.0.18
+ansible_host=192.168.0.18
 
 
