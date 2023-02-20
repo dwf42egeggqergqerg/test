@@ -1,0 +1,25 @@
+[ios]
+192.168.0.18
+
+[ios:vars]
+ansible_network_os=ios
+ansible_connection=network_cli
+ansible_ssh_port=22
+ansible_user=admin
+ansible_password=test1234
+username=admin
+password=test1234
+ansible_ssh_user=admin
+ansible_ssh_pass=test1234
+ansible_become=yes
+ansible_become_method=enable
+ansible_become_password=test1234
+private_key_file = ~/.ssh/id_rsa
+
+[log:vars]
+ansible_python_interpreter=/usr/bin/python3
+
+[log]
+192.168.0.18
+
+
