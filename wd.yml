@@ -1,6 +1,6 @@
 ---
 - name: cisco
-  hosts: ios
+  hosts: all
   gather_facts: no
   connection: local
 
