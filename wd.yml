@@ -13,6 +13,7 @@
       register: show
 
     - name: show_backup
+      become: false
       local_action:
         copy content="{{ show.stdout[1] }}"
         dest=/var/lib/awx/projects/_46__test3/{{ inventory_hostname }}.txt
