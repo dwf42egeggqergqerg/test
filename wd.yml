@@ -18,9 +18,3 @@
         path: "/var/lib/awx/projects/Backup/{{ lookup('pipe', 'date +%Y%m%d') }}"
         state: directory
         mode: u=rwX,g=rX,o=rX
-
-
-    - name: show_backup
-      local_action:
-        copy content="\n\nshow run\n\n{{show.stdout[1] }}"
-        dest=/var/lib/awx/projects/Backup/{{ lookup('pipe', 'date +%Y%m%d') }}/{{ inventory_hostname }}.txt
