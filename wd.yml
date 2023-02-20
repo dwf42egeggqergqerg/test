@@ -22,4 +22,4 @@
     - name: show_backup
       local_action:
         copy content="{{show.stdout[1] }}"
-        dest=/var/lib/awx/projects/Backup/{{ lookup('pipe', 'date +%Y%m%d') }}/{{ inventory_hostname }}.txt
+        dest=/var/lib/awx/projects/Backup/{{ lookup('pipe', 'date +%Y%m%d') }}/TEST.txt
