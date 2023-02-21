@@ -1,5 +1,5 @@
 ---
-- name: Juniper switch check
+- name: CISCO switch check
   hosts: log
   connection: local
   gather_facts: no
@@ -7,27 +7,27 @@
 
   tasks:
     - name: hostname
-      shell: cat Backup/{{ lookup('pipe', 'date +%Y%m%d') }}/{{ inventory_hostname }}.log | grep 'hostname' | awk '{print $2; exit}'
+      shell: cat /cisco_test/Backup/{{ lookup('pipe', 'date +%Y%m%d') }}/{{ inventory_hostname }}.txt | grep 'hostname' | awk '{print $2; exit}'
       ignore_errors: True
       register: Hostname
 
     - name: serial
-      shell: cat Backup/{{ lookup('pipe', 'date +%Y%m%d') }}/{{ inventory_hostname }}.log | sed -n '/{{ Hostname.stdout }}#show version/,/{{ Hostname.stdout }}#show processes cpu/p' | grep "System Serial Number" | awk '{print $5; exit}' | sort -u
+      shell: cat /cisco_test/Backup/{{ lookup('pipe', 'date +%Y%m%d') }}/{{ inventory_hostname }}.txt | sed -n '/show version/,/show processes cpu/p' | grep -E "System serial|System Serial" | awk '{print $5; exit}' | sort -u
       ignore_errors: True
       register: Serial
 
     - name: uptime
-      shell: cat Backup/{{ lookup('pipe', 'date +%Y%m%d') }}/{{ inventory_hostname }}.log | sed -n '/{{ Hostname.stdout }}#show version/,/{{ Hostname.stdout }}#show processes cpu/p' | grep "uptime" | awk '{print $4$5$6$7$8$9; exit}' | sort -u
+      shell: cat /cisco_test/Backup/{{ lookup('pipe', 'date +%Y%m%d') }}/{{ inventory_hostname }}.txt | sed -n '/show version/,/show processes cpu/p' | grep "uptime" | awk '{print $4$5$6$7$8$9; exit}' | sort -u
       ignore_errors: True
       register: Uptime
 
     - name: version
-      shell: cat Backup/{{ lookup('pipe', 'date +%Y%m%d') }}/{{ inventory_hostname }}.log | sed -n '/{{ Hostname.stdout }}#show version/,/{{ Hostname.stdout }}#show processes cpu/p' | grep "*" | awk '{print $5; exit}'
+      shell: cat /cisco_test/Backup/{{ lookup('pipe', 'date +%Y%m%d') }}/{{ inventory_hostname }}.txt | sed -n '/show version/,/show processes cpu/p' | grep "*" | awk '{print $5; exit}'
       ignore_errors: True
       register: Version
 
     - name: cpu
-      shell: cat Backup/{{ lookup('pipe', 'date +%Y%m%d') }}/{{ inventory_hostname }}.log | sed -n '/{{ Hostname.stdout }}#show processes cpu/,/{{ Hostname.stdout }}#show processes memory/p' | grep "CPU" | awk '{print $12; exit}' | sed 's/%//g'
+      shell: cat /cisco_test/Backup/{{ lookup('pipe', 'date +%Y%m%d') }}/{{ inventory_hostname }}.txt | sed -n '/show processes cpu/,/show processes memory/p' | grep "CPU" | awk '{print $12; exit}' | sed 's/%//g'
       ignore_errors: True
       register: CPU
 
@@ -39,12 +39,12 @@
       register: CPU_state
       
     - name: memory Total
-      shell: cat Backup/{{ lookup('pipe', 'date +%Y%m%d') }}/{{ inventory_hostname }}.log | sed -n '/{{ Hostname.stdout }}#show processes memory/,/{{ Hostname.stdout }}#show environment all/p' | grep "Processor" | awk '{print $4; exit}'
+      shell: cat /cisco_test/Backup/{{ lookup('pipe', 'date +%Y%m%d') }}/{{ inventory_hostname }}.txt | sed -n '/show processes memory/,/show env all/p' | grep "Processor" | awk '{print $4; exit}'
       ignore_errors: True
       register: memTotal
 
     - name: memory Total
-      shell: cat Backup/{{ lookup('pipe', 'date +%Y%m%d') }}/{{ inventory_hostname }}.log | sed -n '/{{ Hostname.stdout }}#show processes memory/,/{{ Hostname.stdout }}#show environment all/p' | grep "Processor" | awk '{print $6; exit}'
+      shell: cat /cisco_test/Backup/{{ lookup('pipe', 'date +%Y%m%d') }}/{{ inventory_hostname }}.txt | sed -n '/show processes memory/,/show env all/p' | grep "Processor" | awk '{print $6; exit}'
       ignore_errors: True
       register: memUse
 
@@ -62,7 +62,7 @@
       register: MEM_state
 
     - name: fan
-      shell: cat Backup/{{ lookup('pipe', 'date +%Y%m%d') }}/{{ inventory_hostname }}.log| sed -n '/Switch   FAN/,/SYSTEM TEMPERATURE/p'
+      shell: cat /cisco_test/Backup/{{ lookup('pipe', 'date +%Y%m%d') }}/{{ inventory_hostname }}.txt| sed -n '/Switch   FAN/,/SYSTEM TEMPERATURE/p'
       ignore_errors: True
       register: Fan
 
@@ -72,7 +72,7 @@
       register: Fan_state
 
     - name: temp
-      shell: cat Backup/{{ lookup('pipe', 'date +%Y%m%d') }}/{{ inventory_hostname }}.log| sed -n '/{{ Hostname.stdout }}#show environment all/,/{{ Hostname.stdout }}#show interfaces status err-disabled/p' | grep "Temperature State:" | sort -u
+      shell: cat /cisco_test/Backup/{{ lookup('pipe', 'date +%Y%m%d') }}/{{ inventory_hostname }}.txt| sed -n '/show env all/,/show interfaces status err-disabled/p' | grep "Temperature State:" | sort -u
       ignore_errors: True
       register: Temp
 
@@ -82,7 +82,7 @@
       register: Temp_state      
 
     - name: power
-      shell: cat Backup/{{ lookup('pipe', 'date +%Y%m%d') }}/{{ inventory_hostname }}.log| sed -n '/SW  PID/,/{{ Hostname.stdout }}#show interfaces status err-disabled/p'
+      shell: cat /cisco_test/Backup/{{ lookup('pipe', 'date +%Y%m%d') }}/{{ inventory_hostname }}.txt| sed -n '/SW  PID/,/show interfaces status err-disabled/p'
       ignore_errors: True
       register: Power
 
@@ -91,81 +91,97 @@
       ignore_errors: True
       register: Power_state        
 
-    - name: int_error
-      shell: cat Backup/{{ lookup('pipe', 'date +%Y%m%d') }}/{{ inventory_hostname }}.log | sed -n '/Port         Name               Status/,/{{ Hostname.stdout }}#show logging/p' | grep "err-disabled" | awk '{print $1}' | tr '\n' ','
+    - name: Int_error
+      shell: cat /cisco_test/Backup/{{ lookup('pipe', 'date +%Y%m%d') }}/{{ inventory_hostname }}.txt | sed -n '/Port      Name               Status/,/show logging/p' | grep "err-disabled" | awk '{print $1}' | tr '\n' ','
       ignore_errors: True
       register: Int_Error
-
+      
+    - name: SET_INT1
+      set_fact: Intd="{{ Int_Error.stdout }}"
+      
+    - name: Int_dd
+      debug: msg="{% if Intd | regex_search('[0-9]') %}{{ Intd }}{% else %}INT_ERROR_OK{% endif %}"
+      ignore_errors: True
+      register: Int_Error_result
+      
     - name: crc_error
-      shell: cat Backup/{{ lookup('pipe', 'date +%Y%m%d') }}/{{ inventory_hostname }}.log | sed -n '/OutDiscards/,/Runts/p'| awk '{if ($3>100){ print $1 }}' | sed 's/Port//g' | sed 's/ //g' | tr '\n' ','
+      shell: cat /cisco_test/Backup/{{ lookup('pipe', 'date +%Y%m%d') }}/{{ inventory_hostname }}.txt | sed -n '/OutDiscards/,/Runts/p'| awk '{if ($3>99){ print $1 } else {"OK"}}'  | sed 's/Port//g' | sed 's/ //g' | tr '\n' ','
       ignore_errors: True
       register: Crc_Error
+      
+    - name: SET_INT2
+      set_fact: Intc="{{ Crc_Error.stdout }}"
+      
+    - name: Int_CC
+      debug: msg="{% if Intc | regex_search('[0-9]') %}{{ Intc }}{% else %}CRC_OK{% endif %}"
+      ignore_errors: True
+      register: Int_CRC_result      
       
     - name: Make Result Directory
       local_action:
         module: file
-        path: "Result/{{ lookup('pipe', 'date +%Y%m%d') }}"
+        path: "/cisco_test/Result/{{ lookup('pipe', 'date +%Y%m%d') }}"
         state: directory
         mode: u=rwX,g=rX,o=rX
 
     - name: Result summary
       local_action:
-        copy content="{{ Hostname.stdout }}#|{{ Serial.stdout }}|{{ Uptime.stdout }}|{{ Version.stdout }}|{{ CPU_state}}|{{ MEM_state}}|{{ Fan_state }}|{{ Temp_state }}|{{ Power_state }}|{{ Int_Error.stdout }}|{{ Crc_Error.stdout }}"
-        dest="Result/{{ lookup('pipe', 'date +%Y%m%d') }}/{{ inventory_hostname }}.log"
+        copy content="{{ Hostname.stdout }}|{{ Serial.stdout }}|{{ Uptime.stdout }}|{{ Version.stdout }}|{{ CPU_state}}|{{ MEM_state}}|{{ Fan_state }}|{{ Temp_state }}|{{ Power_state }}|{{ Int_Error_result }}|{{ Int_CRC_result }}"
+        dest="/cisco_test/Result/{{ lookup('pipe', 'date +%Y%m%d') }}/{{ inventory_hostname }}.txt"
 
     - name: Assemble from fragments from a directory
       assemble:
-        src: "Result/{{ lookup('pipe', 'date +%Y%m%d') }}"
-        dest: "Result/cisco.log"
+        src: "/cisco_test/Result/{{ lookup('pipe', 'date +%Y%m%d') }}"
+        dest: "/cisco_test/Result/cisco.log"
       ignore_errors: True
 
     - name: Result modify1
       replace:
-        path: "Result/cisco.log"
+        path: "/cisco_test/Result/cisco.log"
         regexp: "', 'failed': False, 'changed': False}"
         replace: ""
 
     - name: Result modify1
       replace:
-        path: "Result/cisco.log"
+        path: "/cisco_test/Result/cisco.log"
         regexp: "'msg': u'"
         replace: ""
 
     - name: Result modify1
       replace:
-        path: "Result/cisco.log"
+        path: "/cisco_test/Result/cisco.log"
         regexp: "{'msg': '"
         replace: ""
 
     - name: Result modify1
       replace:
-        path: "Result/cisco.log"
+        path: "/cisco_test/Result/cisco.log"
         regexp: "{'msg': '"
         replace: ""
 
     - name: Result modify2
       replace:
-        path: "Result/cisco.log"
+        path: "/cisco_test/Result/cisco.log"
         regexp: "'failed': False, 'changed': False"
         replace: ""
 
     - name: Result modify3
       replace:
-        path: "Result/cisco.log"
+        path: "/cisco_test/Result/cisco.log"
         regexp: "',"
         replace: ""
 
     - name: Result modify4
       replace:
-        path: "Result/cisco.log"
+        path: "/cisco_test/Result/cisco.log"
         regexp: "{"
         replace: ""
 
     - name: Result modify5
       replace:
-        path: "Result/cisco.log"
+        path: "/cisco_test/Result/cisco.log"
         regexp: "}"
         replace: ""
 
     - name: To excel
-      shell: python3 To_excel.py
+      shell: python3 /cisco_test/To_excel.py

@@ -1,0 +1,60 @@
+---
+- name: cisco
+  hosts: ios
+  gather_facts: no
+  connection: localhost
+
+
+  tasks:
+    - name: show_output
+      ios_command:
+        commands:
+          - terminal length 0
+          - show run
+          - show version
+          - show processes cpu
+          - show processes memory
+          - show env all
+          - show interfaces status err-disabled
+          - show interfaces | in up|CRC
+          - show interfaces status
+          - show interfaces counters errors          
+          - show logging
+                 
+      register: show
+
+    - name: Make Result Directory
+      local_action:
+        module: file
+        path: "Backup/{{ lookup('pipe', 'date +%Y%m%d') }}"
+        state: directory
+        mode: u=rwX,g=rX,o=rX
+
+    - name: show_backup
+      local_action:
+        copy content="\n\nshow run\n\n{{ show.stdout[1] }}\n\nshow version\n\n{{ show.stdout[2] }}\n\nshow processes cpu\n\n{{ show.stdout[3] }}\n\nshow processes memory\n\n{{ show.stdout[4] }}\n\nshow env all\n\n{{ show.stdout[5] }}\n\nshow interfaces status err-disabled\n\n{{ show.stdout[6] }}\n\nshow interfaces | in up|CRC\n\n{{ show.stdout[7] }}\n\nshow interfaces status\n\n{{ show.stdout[8] }}\n\nshow logging\n\n{{ show.stdout[9] }}\n\n"
+        dest=Backup/{{ lookup('pipe', 'date +%Y%m%d') }}/{{ inventory_hostname }}.txt
+
+- name: mail test
+  gather_facts: no
+  hosts: 127.0.0.1
+  tasks:
+    - name: file compress
+      shell: zip config.zip Backup/$(date +%Y%m%d)/*
+
+    - name: send e-mail
+      community.general.mail:
+        host: spam.aekyung.kr
+        port: 25
+        subject: configuration backup
+        body: hello!! ansible file attach
+        from: junwoo.lee@aekyung.kr
+        to: 
+        - jungwoo.lee@aekyung.kr
+        - jhchoi4452@aekyung.kr
+        - seungjoon.lee@aekyung.kr
+        - holay@aekyung.kr
+        attach:
+        - /cisco_test/config.zip
+
+
