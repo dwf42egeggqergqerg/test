@@ -1,0 +1,14 @@
+---
+- name: cisco
+  hosts: ios
+  gather_facts: no
+  connection: localhost
+
+
+  tasks:
+    - name: show_output
+      cisco.ios.ios_command:
+        commands:
+          - terminal length 0
+          - show version               
+      register: show
