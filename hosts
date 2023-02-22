@@ -19,6 +19,6 @@ ansible_become_password=test1234
 ansible_python_interpreter=/usr/bin/python3
 
 [log]
-ansible_host=192.168.0.18
+sw1
 
 
