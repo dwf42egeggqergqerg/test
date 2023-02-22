@@ -1,0 +1,12 @@
+XC-DB-L2-01|58%|9%|Good|Good|Good|2020-05-20|Good|Good
+XC-DB-L2-02|60%|10%|Good|Good|Good|2020-05-20|Good|Good
+XC-DMZ-L2-01|56%|32%|Good|Good|Good|2020-07-14|Good|Good
+XC-DMZ-L2-02|59%|20%|Good|Good|Good|2020-07-14|Good|Good
+XC-DMZ-L2-03|59%|11%|Good|Good|Good|2021-04-02|Good|Good
+XC-DMZ-L2-04|59%|8%|Good|Good|Good|2021-04-02|Good|Good
+XC-MAIN-L3-01|58%|12%|Good|Good|Good|2020-07-15|Good|PORT check
+XC-MAIN-L3-02|58%|100%|Good|Good|Good|2020-07-15|Good|Good
+XC-PRI-L2-VC01|59%|11%|Good|Good|Good|2020-07-15|Good|Good
+XC-PRI-L2-VC02|60%|9%|Good|Good|Good|2020-07-15|Good|Good
+XC-WAS-L2-01|59%|33%|Good|Good|Good|2020-07-16|Good|Good
+XC-WAS-L2-02|59%|29%|Good|Good|Good|2020-07-16|Good|Good
