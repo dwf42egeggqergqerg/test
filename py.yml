@@ -5,6 +5,5 @@
   gather_facts: no
 
   tasks:
-
     - name: To excel
-      shell: python3 /cisco_test/To_excel.py
+      shell: python3 /var/lib/awx/projects/_46__test3/To_excel.py
