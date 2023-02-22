@@ -1,0 +1,10 @@
+---
+- name: CISCO switch check
+  hosts: log
+  connection: local
+  gather_facts: no
+
+  tasks:
+
+    - name: To excel
+      shell: python3 /cisco_test/To_excel.py
